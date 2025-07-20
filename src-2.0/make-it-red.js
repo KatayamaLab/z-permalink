@@ -36,6 +36,11 @@ ZoteroPermalink = {
 		if (itemMenu) {
 			itemMenu.appendChild(menuitem);
 			this.storeAddedElement(menuitem);
+
+			// Add popupshowing listener to control menu visibility
+			itemMenu.addEventListener('popupshowing', () => {
+				ZoteroPermalink.updateMenuVisibility(window);
+			});
 		}
 	},
 
@@ -68,6 +73,49 @@ ZoteroPermalink = {
 		for (let win of windows) {
 			if (!win.ZoteroPane) continue;
 			this.removeFromWindow(win);
+		}
+	},
+
+	updateMenuVisibility(window) {
+		try {
+			const doc = window.document;
+			const menuitem = doc.getElementById('zotero-permalink-copy-web-link');
+			if (!menuitem) return;
+
+			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
+			if (!zoteroPane) {
+				menuitem.hidden = true;
+				return;
+			}
+
+			const selectedItems = zoteroPane.getSelectedItems();
+			if (selectedItems.length === 0) {
+				menuitem.hidden = true;
+				return;
+			}
+
+			const item = selectedItems[0];
+			if (!item.isRegularItem()) {
+				menuitem.hidden = true;
+				return;
+			}
+
+			const libraryID = item.libraryID;
+			
+			// Show menu only for group libraries
+			if (libraryID !== Zotero.Libraries.userLibraryID) {
+				const group = Zotero.Groups.getByLibraryID(libraryID);
+				menuitem.hidden = !group;
+			} else {
+				// Hide for personal library
+				menuitem.hidden = true;
+			}
+
+		} catch (error) {
+			this.log('Error updating menu visibility: ' + error.message);
+			const doc = window.document;
+			const menuitem = doc.getElementById('zotero-permalink-copy-web-link');
+			if (menuitem) menuitem.hidden = true;
 		}
 	},
 
