@@ -63,7 +63,7 @@ clipboardHelper.copyString(permalinkURL);
 
 1. Zotero 7でグループライブラリを開く
 2. アイテムを右クリック
-3. 「Copy web link to this article」を選択
+3. 「Copy Web Link to This Item」を選択
 4. リンクがクリップボードにコピーされ、通知が表示される
 
 ## 注意事項
