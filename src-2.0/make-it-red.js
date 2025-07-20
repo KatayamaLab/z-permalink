@@ -1,0 +1,138 @@
+ZoteroPermalink = {
+	id: null,
+	version: null,
+	rootURI: null,
+	initialized: false,
+	addedElementIDs: [],
+	
+	init({ id, version, rootURI }) {
+		if (this.initialized) return;
+		this.id = id;
+		this.version = version;
+		this.rootURI = rootURI;
+		this.initialized = true;
+	},
+	
+	log(msg) {
+		Zotero.debug("Zotero Permalink: " + msg);
+	},
+	
+	addToWindow(window) {
+		let doc = window.document;
+		
+		// Use Fluent for localization
+		window.MozXULElement.insertFTLIfNeeded("make-it-red.ftl");
+		
+		// Add context menu item for items
+		let menuitem = doc.createXULElement('menuitem');
+		menuitem.id = 'zotero-permalink-copy-web-link';
+		menuitem.setAttribute('data-l10n-id', 'zotero-permalink-copy-web-link');
+		menuitem.addEventListener('command', () => {
+			ZoteroPermalink.copyWebLink(window);
+		});
+		
+		// Add to item context menu
+		let itemMenu = doc.getElementById('zotero-itemmenu');
+		if (itemMenu) {
+			itemMenu.appendChild(menuitem);
+			this.storeAddedElement(menuitem);
+		}
+	},
+	
+	addToAllWindows() {
+		var windows = Zotero.getMainWindows();
+		for (let win of windows) {
+			if (!win.ZoteroPane) continue;
+			this.addToWindow(win);
+		}
+	},
+	
+	storeAddedElement(elem) {
+		if (!elem.id) {
+			throw new Error("Element must have an id");
+		}
+		this.addedElementIDs.push(elem.id);
+	},
+	
+	removeFromWindow(window) {
+		var doc = window.document;
+		// Remove all elements added to DOM
+		for (let id of this.addedElementIDs) {
+			doc.getElementById(id)?.remove();
+		}
+		doc.querySelector('[href="make-it-red.ftl"]')?.remove();
+	},
+	
+	removeFromAllWindows() {
+		var windows = Zotero.getMainWindows();
+		for (let win of windows) {
+			if (!win.ZoteroPane) continue;
+			this.removeFromWindow(win);
+		}
+	},
+	
+	async copyWebLink(window) {
+		try {
+			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
+			if (!zoteroPane) {
+				this.log('Zotero pane not available');
+				return;
+			}
+			
+			const selectedItems = zoteroPane.getSelectedItems();
+			if (selectedItems.length === 0) {
+				this.log('No items selected');
+				return;
+			}
+			
+			const item = selectedItems[0];
+			if (!item.isRegularItem()) {
+				this.log('Selected item is not a regular item');
+				return;
+			}
+			
+			const itemKey = item.key;
+			const libraryID = item.libraryID;
+			
+			let groupID, groupName;
+			
+			// Check if this is a group library
+			if (libraryID !== Zotero.Libraries.userLibraryID) {
+				const group = Zotero.Groups.getByLibraryID(libraryID);
+				if (group) {
+					groupID = group.id;
+					groupName = group.name;
+				} else {
+					this.log('Could not find group for library ID: ' + libraryID);
+					return;
+				}
+			} else {
+				this.log('Item is in personal library, cannot generate group link');
+				return;
+			}
+			
+			// Generate the permalink URL
+			const permalinkURL = `https://www.zotero.org/groups/${groupID}/${groupName}/items/${itemKey}/`;
+			
+			// Copy to clipboard
+			const clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+				.getService(Components.interfaces.nsIClipboardHelper);
+			clipboardHelper.copyString(permalinkURL);
+			
+			this.log(`Copied to clipboard: ${permalinkURL}`);
+			
+			// Show notification
+			if (window.Zotero_Tabs && window.Zotero_Tabs.displayAlert) {
+				window.Zotero_Tabs.displayAlert('Copied web link to clipboard', 'success');
+			}
+			
+		} catch (error) {
+			this.log('Error copying web link: ' + error.message);
+			console.error('Zotero Permalink error:', error);
+		}
+	},
+	
+	async main() {
+		this.log('Zotero Permalink plugin initialized');
+	},
+};
