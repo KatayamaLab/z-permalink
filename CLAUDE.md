@@ -24,8 +24,8 @@ Zotero 7用のプラグインで、グループライブラリ内のアイテム
 
 - `src-2.0/manifest.json`: プラグインのメタデータとZotero 7設定
 - `src-2.0/bootstrap.js`: プラグインのライフサイクル管理（起動・終了処理）
-- `src-2.0/make-it-red.js`: メイン機能の実装（コンテキストメニュー追加、リンク生成・コピー）
-- `src-2.0/locale/en-US/make-it-red.ftl`: メニューラベルの多言語対応
+- `src-2.0/zotero-permalink.js`: メイン機能の実装（コンテキストメニュー追加、リンク生成・コピー）
+- `src-2.0/locale/en-US/zotero-permalink.ftl`: メニューラベルの多言語対応
 - `make-zips`: プラグインビルド用スクリプト
 
 ## 実装詳細

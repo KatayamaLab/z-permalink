@@ -10,8 +10,8 @@ function install() {
 
 async function startup({ id, version, rootURI }) {
 	log("Starting 2.0");
-	
-	Services.scriptloader.loadSubScript(rootURI + 'make-it-red.js');
+
+	Services.scriptloader.loadSubScript(rootURI + 'zotero-permalink.js');
 	ZoteroPermalink.init({ id, version, rootURI });
 	ZoteroPermalink.addToAllWindows();
 	await ZoteroPermalink.main();

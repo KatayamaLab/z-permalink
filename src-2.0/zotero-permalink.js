@@ -21,7 +21,7 @@ ZoteroPermalink = {
 		let doc = window.document;
 
 		// Use Fluent for localization
-		window.MozXULElement.insertFTLIfNeeded("make-it-red.ftl");
+		window.MozXULElement.insertFTLIfNeeded("zotero-permalink.ftl");
 
 		// Add context menu item for items
 		let itemMenuItem = doc.createXULElement('menuitem');
@@ -85,7 +85,7 @@ ZoteroPermalink = {
 		for (let id of this.addedElementIDs) {
 			doc.getElementById(id)?.remove();
 		}
-		doc.querySelector('[href="make-it-red.ftl"]')?.remove();
+		doc.querySelector('[href="zotero-permalink.ftl"]')?.remove();
 	},
 
 	removeFromAllWindows() {
@@ -121,7 +121,7 @@ ZoteroPermalink = {
 			}
 
 			const libraryID = item.libraryID;
-			
+
 			// Show menu only for group libraries
 			if (libraryID !== Zotero.Libraries.userLibraryID) {
 				const group = Zotero.Groups.getByLibraryID(libraryID);
@@ -158,7 +158,7 @@ ZoteroPermalink = {
 			}
 
 			const libraryID = selectedCollection.libraryID;
-			
+
 			// Show menu only for group libraries
 			if (libraryID !== Zotero.Libraries.userLibraryID) {
 				const group = Zotero.Groups.getByLibraryID(libraryID);
