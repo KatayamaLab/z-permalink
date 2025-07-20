@@ -23,7 +23,10 @@ ZoteroPermalink = {
 		// Use Fluent for localization
 		window.MozXULElement.insertFTLIfNeeded("zotero-permalink.ftl");
 
-		// Add context menu item for items
+		// Add separator and context menu item for items
+		let itemSeparator = doc.createXULElement('menuseparator');
+		itemSeparator.id = 'zotero-permalink-separator-item';
+
 		let itemMenuItem = doc.createXULElement('menuitem');
 		itemMenuItem.id = 'zotero-permalink-copy-web-link-item';
 		itemMenuItem.setAttribute('data-l10n-id', 'zotero-permalink-copy-web-link');
@@ -34,7 +37,9 @@ ZoteroPermalink = {
 		// Add to item context menu
 		let itemMenu = doc.getElementById('zotero-itemmenu');
 		if (itemMenu) {
+			itemMenu.appendChild(itemSeparator);
 			itemMenu.appendChild(itemMenuItem);
+			this.storeAddedElement(itemSeparator);
 			this.storeAddedElement(itemMenuItem);
 
 			// Add popupshowing listener to control menu visibility
@@ -43,7 +48,10 @@ ZoteroPermalink = {
 			});
 		}
 
-		// Add context menu item for collections
+		// Add separator and context menu item for collections
+		let collectionSeparator = doc.createXULElement('menuseparator');
+		collectionSeparator.id = 'zotero-permalink-separator-collection';
+
 		let collectionMenuItem = doc.createXULElement('menuitem');
 		collectionMenuItem.id = 'zotero-permalink-copy-web-link-collection';
 		collectionMenuItem.setAttribute('data-l10n-id', 'zotero-permalink-copy-web-link');
@@ -54,7 +62,9 @@ ZoteroPermalink = {
 		// Add to collection context menu
 		let collectionMenu = doc.getElementById('zotero-collectionmenu');
 		if (collectionMenu) {
+			collectionMenu.appendChild(collectionSeparator);
 			collectionMenu.appendChild(collectionMenuItem);
+			this.storeAddedElement(collectionSeparator);
 			this.storeAddedElement(collectionMenuItem);
 
 			// Add popupshowing listener to control menu visibility
@@ -100,23 +110,27 @@ ZoteroPermalink = {
 		try {
 			const doc = window.document;
 			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-item');
-			if (!menuitem) return;
+			const separator = doc.getElementById('zotero-permalink-separator-item');
+			if (!menuitem || !separator) return;
 
 			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
 			if (!zoteroPane) {
 				menuitem.hidden = true;
+				separator.hidden = true;
 				return;
 			}
 
 			const selectedItems = zoteroPane.getSelectedItems();
 			if (selectedItems.length === 0) {
 				menuitem.hidden = true;
+				separator.hidden = true;
 				return;
 			}
 
 			const item = selectedItems[0];
 			if (!item.isRegularItem()) {
 				menuitem.hidden = true;
+				separator.hidden = true;
 				return;
 			}
 
@@ -125,17 +139,22 @@ ZoteroPermalink = {
 			// Show menu only for group libraries
 			if (libraryID !== Zotero.Libraries.userLibraryID) {
 				const group = Zotero.Groups.getByLibraryID(libraryID);
-				menuitem.hidden = !group;
+				const shouldShow = !!group;
+				menuitem.hidden = !shouldShow;
+				separator.hidden = !shouldShow;
 			} else {
 				// Hide for personal library
 				menuitem.hidden = true;
+				separator.hidden = true;
 			}
 
 		} catch (error) {
 			this.log('Error updating item menu visibility: ' + error.message);
 			const doc = window.document;
 			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-item');
+			const separator = doc.getElementById('zotero-permalink-separator-item');
 			if (menuitem) menuitem.hidden = true;
+			if (separator) separator.hidden = true;
 		}
 	},
 
@@ -143,17 +162,20 @@ ZoteroPermalink = {
 		try {
 			const doc = window.document;
 			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-collection');
-			if (!menuitem) return;
+			const separator = doc.getElementById('zotero-permalink-separator-collection');
+			if (!menuitem || !separator) return;
 
 			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
 			if (!zoteroPane) {
 				menuitem.hidden = true;
+				separator.hidden = true;
 				return;
 			}
 
 			const selectedCollection = zoteroPane.getSelectedCollection();
 			if (!selectedCollection) {
 				menuitem.hidden = true;
+				separator.hidden = true;
 				return;
 			}
 
@@ -162,17 +184,22 @@ ZoteroPermalink = {
 			// Show menu only for group libraries
 			if (libraryID !== Zotero.Libraries.userLibraryID) {
 				const group = Zotero.Groups.getByLibraryID(libraryID);
-				menuitem.hidden = !group;
+				const shouldShow = !!group;
+				menuitem.hidden = !shouldShow;
+				separator.hidden = !shouldShow;
 			} else {
 				// Hide for personal library
 				menuitem.hidden = true;
+				separator.hidden = true;
 			}
 
 		} catch (error) {
 			this.log('Error updating collection menu visibility: ' + error.message);
 			const doc = window.document;
 			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-collection');
+			const separator = doc.getElementById('zotero-permalink-separator-collection');
 			if (menuitem) menuitem.hidden = true;
+			if (separator) separator.hidden = true;
 		}
 	},
 

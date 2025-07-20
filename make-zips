@@ -4,8 +4,8 @@ set -euo pipefail
 rm -rf build
 mkdir build
 
-cd ./src-2.0
-zip -r ../build/zotero-permalink-2.0.xpi *
+cd ./src
+zip -r ../build/zotero-permalink-1.0.0.xpi *
 cd ../build
 
-jq ".addons[\"zotero-permalink@katayama.com\"].updates[0].update_hash = \"sha256:`shasum -a 256 zotero-permalink-2.0.xpi | cut -d' ' -f1`\"" ../updates-2.0.json.tmpl > updates-2.0.json
+jq ".addons[\"zotero-permalink@zotero.org\"].updates[0].update_hash = \"sha256:`shasum -a 256 zotero-permalink-1.0.0.xpi | cut -d' ' -f1`\"" ../updates-1.0.0.json.tmpl > updates-1.0.0.json
