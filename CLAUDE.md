@@ -4,11 +4,20 @@ Zotero 7用のプラグインで、グループライブラリ内のアイテム
 
 ## 機能
 
-- アイテムのコンテキストメニューに「Copy web link to this article」を追加
-- **グループライブラリ内のアイテムでのみメニューを表示**（My Libraryでは非表示）
+- **アイテム**のコンテキストメニューに「Copy Web Link to This Item」を追加
+- **コレクション**のコンテキストメニューに「Copy Web Link to This Item」を追加
+- **グループライブラリ内のアイテム・コレクションでのみメニューを表示**（My Libraryでは非表示）
+
+### アイテム用機能
 - グループライブラリ内のアイテムを選択してメニューをクリックすると、以下の形式のリンクをクリップボードにコピー:
   ```
   https://www.zotero.org/groups/{groupID}/items/{itemKey}/
+  ```
+
+### コレクション用機能
+- グループライブラリ内のコレクションを選択してメニューをクリックすると、以下の形式のリンクをクリップボードにコピー:
+  ```
+  https://www.zotero.org/groups/{groupID}/collections/{collectionKey}/
   ```
 
 ## ファイル構成
@@ -22,16 +31,23 @@ Zotero 7用のプラグインで、グループライブラリ内のアイテム
 ## 実装詳細
 
 ### コンテキストメニューの追加
-- `zotero-itemmenu`に`menuitem`要素を追加
+- `zotero-itemmenu`（アイテム用）と`zotero-collectionmenu`（コレクション用）に`menuitem`要素を追加
 - Fluent形式での多言語対応
 - `popupshowing`イベントで動的にメニューの表示/非表示を制御
 
 ### グループ情報の取得
 ```javascript
+// アイテムの場合
 const item = selectedItems[0];
 const itemKey = item.key;
 const libraryID = item.libraryID;
 
+// コレクションの場合
+const collection = zoteroPane.getSelectedCollection();
+const collectionKey = collection.key;
+const libraryID = collection.libraryID;
+
+// 共通のグループ情報取得
 if (libraryID !== Zotero.Libraries.userLibraryID) {
     const group = Zotero.Groups.getByLibraryID(libraryID);
     const groupID = group.id;
@@ -61,13 +77,20 @@ clipboardHelper.copyString(permalinkURL);
 
 ## 使用方法
 
+### アイテムのリンクをコピー
 1. Zotero 7でグループライブラリを開く
 2. アイテムを右クリック
 3. 「Copy Web Link to This Item」を選択
-4. リンクがクリップボードにコピーされ、通知が表示される
+4. `https://www.zotero.org/groups/{groupID}/items/{itemKey}/` 形式のリンクがクリップボードにコピーされ、通知が表示される
+
+### コレクションのリンクをコピー
+1. Zotero 7でグループライブラリを開く
+2. コレクション（フォルダ）を右クリック
+3. 「Copy Web Link to This Item」を選択
+4. `https://www.zotero.org/groups/{groupID}/collections/{collectionKey}/` 形式のリンクがクリップボードにコピーされ、通知が表示される
 
 ## 注意事項
 
-- グループライブラリ内のアイテムのみ対応
-- 個人ライブラリのアイテムでは機能しません
+- グループライブラリ内のアイテム・コレクションのみ対応
+- 個人ライブラリ（My Library）ではコンテキストメニューが表示されません
 - Zotero 7.0以上が必要

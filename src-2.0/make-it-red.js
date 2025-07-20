@@ -24,22 +24,42 @@ ZoteroPermalink = {
 		window.MozXULElement.insertFTLIfNeeded("make-it-red.ftl");
 
 		// Add context menu item for items
-		let menuitem = doc.createXULElement('menuitem');
-		menuitem.id = 'zotero-permalink-copy-web-link';
-		menuitem.setAttribute('data-l10n-id', 'zotero-permalink-copy-web-link');
-		menuitem.addEventListener('command', () => {
+		let itemMenuItem = doc.createXULElement('menuitem');
+		itemMenuItem.id = 'zotero-permalink-copy-web-link-item';
+		itemMenuItem.setAttribute('data-l10n-id', 'zotero-permalink-copy-web-link');
+		itemMenuItem.addEventListener('command', () => {
 			ZoteroPermalink.copyWebLink(window);
 		});
 
 		// Add to item context menu
 		let itemMenu = doc.getElementById('zotero-itemmenu');
 		if (itemMenu) {
-			itemMenu.appendChild(menuitem);
-			this.storeAddedElement(menuitem);
+			itemMenu.appendChild(itemMenuItem);
+			this.storeAddedElement(itemMenuItem);
 
 			// Add popupshowing listener to control menu visibility
 			itemMenu.addEventListener('popupshowing', () => {
-				ZoteroPermalink.updateMenuVisibility(window);
+				ZoteroPermalink.updateItemMenuVisibility(window);
+			});
+		}
+
+		// Add context menu item for collections
+		let collectionMenuItem = doc.createXULElement('menuitem');
+		collectionMenuItem.id = 'zotero-permalink-copy-web-link-collection';
+		collectionMenuItem.setAttribute('data-l10n-id', 'zotero-permalink-copy-web-link');
+		collectionMenuItem.addEventListener('command', () => {
+			ZoteroPermalink.copyCollectionWebLink(window);
+		});
+
+		// Add to collection context menu
+		let collectionMenu = doc.getElementById('zotero-collectionmenu');
+		if (collectionMenu) {
+			collectionMenu.appendChild(collectionMenuItem);
+			this.storeAddedElement(collectionMenuItem);
+
+			// Add popupshowing listener to control menu visibility
+			collectionMenu.addEventListener('popupshowing', () => {
+				ZoteroPermalink.updateCollectionMenuVisibility(window);
 			});
 		}
 	},
@@ -76,10 +96,10 @@ ZoteroPermalink = {
 		}
 	},
 
-	updateMenuVisibility(window) {
+	updateItemMenuVisibility(window) {
 		try {
 			const doc = window.document;
-			const menuitem = doc.getElementById('zotero-permalink-copy-web-link');
+			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-item');
 			if (!menuitem) return;
 
 			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
@@ -112,9 +132,46 @@ ZoteroPermalink = {
 			}
 
 		} catch (error) {
-			this.log('Error updating menu visibility: ' + error.message);
+			this.log('Error updating item menu visibility: ' + error.message);
 			const doc = window.document;
-			const menuitem = doc.getElementById('zotero-permalink-copy-web-link');
+			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-item');
+			if (menuitem) menuitem.hidden = true;
+		}
+	},
+
+	updateCollectionMenuVisibility(window) {
+		try {
+			const doc = window.document;
+			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-collection');
+			if (!menuitem) return;
+
+			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
+			if (!zoteroPane) {
+				menuitem.hidden = true;
+				return;
+			}
+
+			const selectedCollection = zoteroPane.getSelectedCollection();
+			if (!selectedCollection) {
+				menuitem.hidden = true;
+				return;
+			}
+
+			const libraryID = selectedCollection.libraryID;
+			
+			// Show menu only for group libraries
+			if (libraryID !== Zotero.Libraries.userLibraryID) {
+				const group = Zotero.Groups.getByLibraryID(libraryID);
+				menuitem.hidden = !group;
+			} else {
+				// Hide for personal library
+				menuitem.hidden = true;
+			}
+
+		} catch (error) {
+			this.log('Error updating collection menu visibility: ' + error.message);
+			const doc = window.document;
+			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-collection');
 			if (menuitem) menuitem.hidden = true;
 		}
 	},
@@ -176,6 +233,60 @@ ZoteroPermalink = {
 		} catch (error) {
 			this.log('Error copying web link: ' + error.message);
 			console.error('Zotero Permalink error:', error);
+		}
+	},
+
+	async copyCollectionWebLink(window) {
+		try {
+			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
+			if (!zoteroPane) {
+				this.log('Zotero pane not available');
+				return;
+			}
+
+			const selectedCollection = zoteroPane.getSelectedCollection();
+			if (!selectedCollection) {
+				this.log('No collection selected');
+				return;
+			}
+
+			const collectionKey = selectedCollection.key;
+			const libraryID = selectedCollection.libraryID;
+
+			let groupID;
+
+			// Check if this is a group library
+			if (libraryID !== Zotero.Libraries.userLibraryID) {
+				const group = Zotero.Groups.getByLibraryID(libraryID);
+				if (group) {
+					groupID = group.id;
+				} else {
+					this.log('Could not find group for library ID: ' + libraryID);
+					return;
+				}
+			} else {
+				this.log('Collection is in personal library, cannot generate group link');
+				return;
+			}
+
+			// Generate the collection permalink URL
+			const permalinkURL = `https://www.zotero.org/groups/${groupID}/collections/${collectionKey}/`;
+
+			// Copy to clipboard
+			const clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+				.getService(Components.interfaces.nsIClipboardHelper);
+			clipboardHelper.copyString(permalinkURL);
+
+			this.log(`Copied collection link to clipboard: ${permalinkURL}`);
+
+			// Show notification
+			if (window.Zotero_Tabs && window.Zotero_Tabs.displayAlert) {
+				window.Zotero_Tabs.displayAlert('Copied collection web link to clipboard', 'success');
+			}
+
+		} catch (error) {
+			this.log('Error copying collection web link: ' + error.message);
+			console.error('Zotero Permalink collection error:', error);
 		}
 	},
 
