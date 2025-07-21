@@ -7,7 +7,7 @@
 	"applications": {
 		"zotero": {
 			"id": "z-permalink@zotero.org",
-			"update_url": "https://zotero-download.s3.amazonaws.com/tmp/z-permalink/updates-2.0.json",
+			"update_url": "https://github.com/KatayamaLab/z-permalink/releases/download/v1.0.1/updates-1.0.1.json",
 			"strict_min_version": "7.0",
 			"strict_max_version": "7.1.*"
 		}
