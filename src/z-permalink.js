@@ -14,22 +14,22 @@ ZoteroPermalink = {
 	},
 
 	log(msg) {
-		Zotero.debug("Zotero Permalink: " + msg);
+		Zotero.debug("Z Permalink: " + msg);
 	},
 
 	addToWindow(window) {
 		let doc = window.document;
 
 		// Use Fluent for localization
-		window.MozXULElement.insertFTLIfNeeded("zotero-permalink.ftl");
+		window.MozXULElement.insertFTLIfNeeded("z-permalink.ftl");
 
 		// Add separator and context menu item for items
 		let itemSeparator = doc.createXULElement('menuseparator');
-		itemSeparator.id = 'zotero-permalink-separator-item';
+		itemSeparator.id = 'z-permalink-separator-item';
 
 		let itemMenuItem = doc.createXULElement('menuitem');
-		itemMenuItem.id = 'zotero-permalink-copy-web-link-item';
-		itemMenuItem.setAttribute('data-l10n-id', 'zotero-permalink-copy-web-link');
+		itemMenuItem.id = 'z-permalink-copy-web-link-item';
+		itemMenuItem.setAttribute('data-l10n-id', 'z-permalink-copy-web-link');
 		itemMenuItem.addEventListener('command', () => {
 			ZoteroPermalink.copyWebLink(window);
 		});
@@ -50,11 +50,11 @@ ZoteroPermalink = {
 
 		// Add separator and context menu item for collections
 		let collectionSeparator = doc.createXULElement('menuseparator');
-		collectionSeparator.id = 'zotero-permalink-separator-collection';
+		collectionSeparator.id = 'z-permalink-separator-collection';
 
 		let collectionMenuItem = doc.createXULElement('menuitem');
-		collectionMenuItem.id = 'zotero-permalink-copy-web-link-collection';
-		collectionMenuItem.setAttribute('data-l10n-id', 'zotero-permalink-copy-web-link');
+		collectionMenuItem.id = 'z-permalink-copy-web-link-collection';
+		collectionMenuItem.setAttribute('data-l10n-id', 'z-permalink-copy-web-link');
 		collectionMenuItem.addEventListener('command', () => {
 			ZoteroPermalink.copyCollectionWebLink(window);
 		});
@@ -95,7 +95,7 @@ ZoteroPermalink = {
 		for (let id of this.addedElementIDs) {
 			doc.getElementById(id)?.remove();
 		}
-		doc.querySelector('[href="zotero-permalink.ftl"]')?.remove();
+		doc.querySelector('[href="z-permalink.ftl"]')?.remove();
 	},
 
 	removeFromAllWindows() {
@@ -109,8 +109,8 @@ ZoteroPermalink = {
 	updateItemMenuVisibility(window) {
 		try {
 			const doc = window.document;
-			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-item');
-			const separator = doc.getElementById('zotero-permalink-separator-item');
+			const menuitem = doc.getElementById('z-permalink-copy-web-link-item');
+			const separator = doc.getElementById('z-permalink-separator-item');
 			if (!menuitem || !separator) return;
 
 			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
@@ -151,8 +151,8 @@ ZoteroPermalink = {
 		} catch (error) {
 			this.log('Error updating item menu visibility: ' + error.message);
 			const doc = window.document;
-			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-item');
-			const separator = doc.getElementById('zotero-permalink-separator-item');
+			const menuitem = doc.getElementById('z-permalink-copy-web-link-item');
+			const separator = doc.getElementById('z-permalink-separator-item');
 			if (menuitem) menuitem.hidden = true;
 			if (separator) separator.hidden = true;
 		}
@@ -161,8 +161,8 @@ ZoteroPermalink = {
 	updateCollectionMenuVisibility(window) {
 		try {
 			const doc = window.document;
-			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-collection');
-			const separator = doc.getElementById('zotero-permalink-separator-collection');
+			const menuitem = doc.getElementById('z-permalink-copy-web-link-collection');
+			const separator = doc.getElementById('z-permalink-separator-collection');
 			if (!menuitem || !separator) return;
 
 			const zoteroPane = window.ZoteroPane || Zotero.getActiveZoteroPane();
@@ -196,8 +196,8 @@ ZoteroPermalink = {
 		} catch (error) {
 			this.log('Error updating collection menu visibility: ' + error.message);
 			const doc = window.document;
-			const menuitem = doc.getElementById('zotero-permalink-copy-web-link-collection');
-			const separator = doc.getElementById('zotero-permalink-separator-collection');
+			const menuitem = doc.getElementById('z-permalink-copy-web-link-collection');
+			const separator = doc.getElementById('z-permalink-separator-collection');
 			if (menuitem) menuitem.hidden = true;
 			if (separator) separator.hidden = true;
 		}
@@ -259,7 +259,7 @@ ZoteroPermalink = {
 
 		} catch (error) {
 			this.log('Error copying web link: ' + error.message);
-			console.error('Zotero Permalink error:', error);
+			console.error('Z Permalink error:', error);
 		}
 	},
 
@@ -313,11 +313,11 @@ ZoteroPermalink = {
 
 		} catch (error) {
 			this.log('Error copying collection web link: ' + error.message);
-			console.error('Zotero Permalink collection error:', error);
+			console.error('Z Permalink collection error:', error);
 		}
 	},
 
 	async main() {
-		this.log('Zotero Permalink plugin initialized');
+		this.log('Z Permalink plugin initialized');
 	},
 };

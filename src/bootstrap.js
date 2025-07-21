@@ -1,7 +1,7 @@
 var ZoteroPermalink;
 
 function log(msg) {
-	Zotero.debug("Zotero Permalink: " + msg);
+	Zotero.debug("Z Permalink: " + msg);
 }
 
 function install() {
@@ -11,7 +11,7 @@ function install() {
 async function startup({ id, version, rootURI }) {
 	log("Starting 2.0");
 
-	Services.scriptloader.loadSubScript(rootURI + 'zotero-permalink.js');
+	Services.scriptloader.loadSubScript(rootURI + 'z-permalink.js');
 	ZoteroPermalink.init({ id, version, rootURI });
 	ZoteroPermalink.addToAllWindows();
 	await ZoteroPermalink.main();

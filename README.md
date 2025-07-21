@@ -1,4 +1,4 @@
-# Zotero Permalink Plugin
+# Z Permalink Plugin
 
 A Zotero 7+ plugin that adds the ability to copy web links to Zotero items and collections in group libraries directly to your clipboard.
 
@@ -21,7 +21,7 @@ A Zotero 7+ plugin that adds the ability to copy web links to Zotero items and c
 
 ### Method 1: Download and Install
 
-1. Download the latest release from the [Releases page](https://github.com/KatayamaLab/zotero-permalink/releases)
+1. Download the latest release from the [Releases page](https://github.com/KatayamaLab/zpermalink/releases)
 2. In Zotero, go to **Tools > Add-ons**
 3. Click the gear icon (⚙️) and select **Install Add-on From File...**
 4. Select the downloaded `.xpi` file
@@ -31,8 +31,8 @@ A Zotero 7+ plugin that adds the ability to copy web links to Zotero items and c
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/KatayamaLab/zotero-permalink.git
-   cd zotero-permalink
+   git clone https://github.com/KatayamaLab/z-permalink.git
+   cd z-permalink
    ```
 
 2. Build the plugin:
@@ -40,7 +40,7 @@ A Zotero 7+ plugin that adds the ability to copy web links to Zotero items and c
    ./make-zips
    ```
 
-3. Install the generated `build/zotero-permalink-1.0.0.xpi` file following Method 1 steps 2-5
+3. Install the generated `build/z-permalink-1.0.1.xpi` file following Method 1 steps 2-5
 
 ## Usage
 
@@ -63,10 +63,10 @@ A Zotero 7+ plugin that adds the ability to copy web links to Zotero items and c
 src/
 ├── manifest.json              # Plugin metadata and Zotero 7 configuration
 ├── bootstrap.js               # Plugin lifecycle management
-├── zotero-permalink.js        # Main functionality implementation
+├── z-permalink.js        # Main functionality implementation
 └── locale/
     └── en-US/
-        └── zotero-permalink.ftl  # Menu labels and localization
+        └── z-permalink.ftl  # Menu labels and localization
 ```
 
 
@@ -100,9 +100,9 @@ If you encounter any issues:
 
 1. Check that you're using Zotero 7.0 or higher
 2. Verify you're working with group library items (not personal library)
-3. Open an issue on the [GitHub repository](https://github.com/KatayamaLab/zotero-permalink/issues)
+3. Open an issue on the [GitHub repository](https://github.com/KatayamaLab/z-permalink/issues)
 
 ## Changelog
 
-### Version 1.0.0
+### Version 1.0.1
 - Initial release
